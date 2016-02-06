@@ -24,7 +24,7 @@ function updateRating($videoId,$rating){
 	//get video tags
 	$videoTags = db()->from('video_tags')->where('video = ?',$videoId)->fetchAll();
 	foreach($videoTags as $videoTag){
-		if(!isset($_SESSION['rating'][$videoTag['tag_id']])){
+		if(!isset($_SESSION['rating']['tag'.$videoTag['tag_id']])){
 			//set a new
 			$_SESSION['rating']['tag'.$videoTag['tag_id']] = 0;
 		}
