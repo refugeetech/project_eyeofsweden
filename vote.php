@@ -1,5 +1,8 @@
 <?php
 
-require("libs/FluentPDO/FluentPDO.php");
-$pdo = new PDO("mysql:dbname=challange4", "root", "reftec1234");
-$fpdo = new FluentPDO($pdo);
+require('init.php');
+
+//set vote
+if(isset($_POST['video_id']) && isset($_POST['rate'])){
+	$_SESSION[ $_POST['video_id'] ] = $_POST['rate'];
+}
