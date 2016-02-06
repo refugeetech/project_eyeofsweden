@@ -29,9 +29,9 @@ function updateRating($videoId,$rating){
 			$_SESSION['rating']['tag'.$videoTag['tag_id']] = 0;
 		}
 		//update
-		$_SESSION['rating']['tag'.$videoTag['tag_id']] += $rating*$videoTag['relevance'];
+		$_SESSION['rating']['tag'.$videoTag['tag_id']] += ((int)$rating*$videoTag['relevance']);
 	}
-
+	return true;
 }
 
 
