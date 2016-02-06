@@ -3,7 +3,7 @@ session_start();
 
 //init database
 require("libs/FluentPDO/FluentPDO.php");
-$pdo = new PDO("mysql:host=176.10.154.200;dbname=challange4", "root", "reftec1234");
+$pdo = new PDO("mysql:host=176.10.154.200;dbname=eyeofsweden", "root", "reftec1234");
 $fpdo = new FluentPDO($pdo);
 
 //to get access inside functions
