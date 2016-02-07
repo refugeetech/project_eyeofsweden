@@ -42,9 +42,12 @@ function getNextVideo(){
 	//get next video
 	$watchedIds = array_keys($_SESSION['history']);
 	$videos = db()->from('video_tags')
-		->where('tags',$favorites) //check tags
+		->where('tag_id',$favorites) //check tag - only tags choosed by user
 		->where('id NOT IN (:id)',array(':id'=>implode(', ',$watchedIds)))
 		->limit(10)
+		->select('video_id','tag_id','count(tag_id) as ct')
+		->groupBy('video_id')
+		->orderBy('ct','DESC')
 		->fetchAll();
 	//return video
 	if(count($videos)>0){
