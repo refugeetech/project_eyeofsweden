@@ -11,6 +11,10 @@ function db(){
 	global $fpdo;
 	return $fpdo;
 }
+function pdodb(){
+	global $pdo;
+	return $pdo;
+}
 
 //prepare session places
 if(!isset($_SESSION['rating'])) $_SESSION['rating'] = array();
@@ -34,23 +38,45 @@ function updateRating($videoId,$rating){
 	return true;
 }
 
-
+/**
+ * Get next video information
+ * @TODO: returning only not seen videos - what if we run out of videos?
+ * meybe not seen in latest
+ * @return     boolean|array false if not video found, array if there is a next video
+ */
 function getNextVideo(){
 	//sort
 	asort($_SESSION['rating']);
 	$favorites = array_slice($_SESSION['rating'],-3);//get 3 favorite tags
 	//get next video
 	$watchedIds = array_keys($_SESSION['history']);
-	$videos = db()->from('video_tags')
-		->where('tags',$favorites) //check tags
-		->where('id NOT IN (:id)',array(':id'=>implode(', ',$watchedIds)))
-		->limit(10)
-		->fetchAll();
-	//return video
+	//create query
+	$query = 'SELECT video_id, SUM(relevance) AS video_rel FROM video_tags ';//select video_id and counter of founded
+	if(count($favorites)>0 || count($watchedIds)>0) $query.= 'WHERE ';
+	if(count($favorites)>0) $query.= 'tag_id IN ('.implode(',',$favorites).') ';//check tags selected by user
+	if(count($favorites)>0 and count($watchedIds)>0) $query.= 'AND ';
+	if(count($watchedIds)>0) $query.= 'video_id NOT IN ('.implode(',',$watchedIds).') ';//check for not seen videos
+	$query.= 'GROUP BY video_id ORDER BY video_rel DESC LIMIT 1';//order by relevance and limit to 1 row
+	//pepare pdo query
+	$stmt = pdodb()->prepare($query);
+	//execute query
+	$queryOk = $stmt->execute();
+	//if db error - return false
+	if(!$queryOk) return false;
+	//fetch videos from result
+	$videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	//check if videos are not empty
 	if(count($videos)>0){
-		//get first, fuck the rest
-		return db()->from('videos',$videos[0]['video_id'])->fetch();
+		//get first video. fuck the rest
+		$v = $videos[0];
+		//save as watched with 0 score to not show again
+		if(!isset($_SESSION['history'][$v['video_id']])){
+			$_SESSION['history'][$v['video_id']] = 0;
+		}
+		//return video
+		return $v;
 	}else{
+		//no videos found
 		return false;
 	}
 }
