@@ -54,25 +54,3 @@ function getNextVideo(){
 		return false;
 	}
 }
-
-function videoList($pdo){
-	$query = $pdo->query("
-		select v.id, v.link link, group_concat(t.title SEPARATOR ' ') tags
-		from videos v
-		  join video_tags vt on vt.video_id = v.id
-		  join tags t on t.id = vt.tag_id
-		group by v.id");
-
-	if (!$query) {
-		return;
-	}
-
-	return $query->fetchAll();
-}
-
-
-
-
-
-
-
