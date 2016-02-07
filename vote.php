@@ -8,8 +8,9 @@ $result = array(
 );
 
 //set vote
-if(isset($_POST['video_id']) && isset($_POST['rate'])){
-	$result['updated'] = updateRating($_POST['video_id'],$_POST['rate']);
+$req = isset($_GET['video_id']) ? $_GET : $_POST;
+if(isset($req['video_id']) && isset($req['rate'])){
+	$result['updated'] = updateRating($req['video_id'],$_POST['rate']);
 }
 
 //get next video
