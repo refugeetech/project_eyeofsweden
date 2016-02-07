@@ -3,37 +3,71 @@
 var controllers = angular.module('7-11-lucia-controllers',[]);
 
 
-controllers.controller('startController',['$scope', '$sce', '$window', 'smoothScroll', function($scope, $sce, $window, smoothScroll){
+controllers.controller('startController',['$scope', '$sce', '$window', 'smoothScroll', '$http', function($scope, $sce, $window, smoothScroll, $http){
 
     $scope.videos = [];
     $scope.nextVideos = [];
-    $scope.currentVideo = { url: "", tags: [] }
-    $scope.tagValues = {}
+    $scope.currentVideo = null;
+    $scope.tagValues = {};
 
     $scope.trustSrc = function(src) {
-        return $sce.trustAsResourceUrl(src);
+        if (src == undefined) return;
+        return $sce.trustAsResourceUrl(src + "?modestbranding=1&autohide=1&showinfo=0&controls=0");
     }
 
     $scope.getRandomVideo = function () {
         $scope.currentVideo = $scope.videos[Math.floor((Math.random() * $scope.videos.length))];
         console.log("playing video " + $scope.currentVideo.url)
+
     }
+    $scope.loading = false;
 
     $scope.loadVideos = function () {
-        $scope.videos = $scope.videos.concat(
-            [
-                { id: 1, url: "https://www.youtube.com/embed/cCKvtxg1ZTs", title: "Teacher",tags: ["education", "teacher", "school"]},
-                { id: 2, url: "https://www.youtube.com/embed/cCKvtxg1ZTs", title: "Hermods high school in Sweden",tags: ["swedish","school","education","language"]},
-                { id: 3, url: "https://www.youtube.com/embed/nPJm6Hbtwrg", title: "How to become a doctor (PhD) in Sweden. Step-by-step.",tags: ["phd","university","doctoral","education","doctor"]},
-                { id: 4, url: "https://www.youtube.com/embed/mhxcpaJE_j4", title: "My Swedish School",tags: ["education","school","everyday"]},
-                { id: 5, url: "https://www.youtube.com/embed/FofjbSdsgq4", title: "Teachers TV- How Do They Do It In Sweden?",tags: ["education","teacher","school","teaching"]},
-                { id: 6, url: "https://www.youtube.com/embed/ImytBfwJbkA", title: "How to be a student in Sweden",tags: ["education","studen","school","university","everyday"]}
-            ]
-        );
+        //if(!$scope.loading)
+        //    $scope.loading = true;
+        //else
+        //    return
+        console.log("loadVideos");
+        $http.get('vote.php').success(function(data) {
+            if (!data.video) return;
+            $scope.currentVideo = {
+                id: data.video.id,
+                url: data.video.link,
+                title: data.video.title,
+                tags: data.video.tags
+            };
 
-        $scope.getRandomVideo();
-        $scope.nextVideos = $scope.videos;
+        });
+
+
+        //$http.get('related.php').success(function(data) {
+        //    $scope.videos = {
+        //        id: data.video.id,
+        //        url: data.video.link,
+        //        title: data.video.title,
+        //        tags: data.video.tags
+        //    };
+        //    $scope.getRandomVideo();
+        //    $scope.nextVideos = $scope.videos;
+        //});
+
+        //$scope.videos = $scope.videos.concat(
+        //    [
+        //        { id: 1, url: "https://www.youtube.com/embed/cCKvtxg1ZTs", title: "Teacher",tags: ["education", "teacher", "school"]},
+        //        { id: 2, url: "https://www.youtube.com/embed/cCKvtxg1ZTs", title: "Hermods high school in Sweden",tags: ["swedish","school","education","language"]},
+        //        { id: 3, url: "https://www.youtube.com/embed/nPJm6Hbtwrg", title: "How to become a doctor (PhD) in Sweden. Step-by-step.",tags: ["phd","university","doctoral","education","doctor"]},
+        //        { id: 4, url: "https://www.youtube.com/embed/mhxcpaJE_j4", title: "My Swedish School",tags: ["education","school","everyday"]},
+        //        { id: 5, url: "https://www.youtube.com/embed/FofjbSdsgq4", title: "Teachers TV- How Do They Do It In Sweden?",tags: ["education","teacher","school","teaching"]},
+        //        { id: 6, url: "https://www.youtube.com/embed/ImytBfwJbkA", title: "How to be a student in Sweden",tags: ["education","studen","school","university","everyday"]}
+        //    ]
+        //);
+        //$scope.getRandomVideo();
+        //$scope.nextVideos = $scope.videos;
+
+
+
     }
+
     $scope.loadVideos();
 
     $scope.like = function () {
