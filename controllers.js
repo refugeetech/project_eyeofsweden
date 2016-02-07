@@ -92,6 +92,16 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
         $scope.getRandomVideo();
     }
 
+    $scope.nextVideo = function () {
+        console.log("next!");
+        $scope.getRandomVideo();
+    }
+
+    $scope.previousVideo = function () {
+        console.log("previous!");
+        $scope.getRandomVideo();
+    }
+
     $scope.clickVideo = function (video) {
         console.log("clicking a video");
         $scope.currentVideo = video;
@@ -166,17 +176,30 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
             }
         }
 
-        $scope.likeMiddle = function () {
+        $scope.swipeButton = function () {
             if($scope.isDesktop()) {
                 return {
-                    'margin-top': ($scope.windowHeight*0.67) + 'px',
-                    'margin-left': ($scope.windowWidth/2)-75 + 'px',
+                    'margin-top': (($scope.windowHeight*0.70)/2)-15 + 'px',
                 };
             }
             else {
                 return {
-                    'margin-top': ($scope.windowHeight*0.67) + 'px',
-                    'margin-left': ($scope.windowWidth/2)-75 + 'px',
+                    'margin-top': (($scope.windowHeight*0.70)/2)-15 + 'px',
+                };
+            }
+        }
+
+        $scope.likeMiddle = function () {
+            if($scope.isDesktop()) {
+                return {
+                    'margin-top': ($scope.windowHeight*0.70)-50 + 'px',
+                    'margin-left': ($scope.windowWidth/2)-50 + 'px',
+                };
+            }
+            else {
+                return {
+                    'margin-top': ($scope.windowHeight*0.70)-50 + 'px',
+                    'margin-left': ($scope.windowWidth/2)-50 + 'px',
                 };
             }
         }
