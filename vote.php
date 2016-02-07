@@ -9,7 +9,7 @@ $result = array(
 
 //set vote
 if(isset($_POST['video_id']) && isset($_POST['rate'])){
-	$result['updated'] = updateRating($_POST['videoId'],$_POST['rate']);
+	$result['updated'] = updateRating($_POST['video_id'],$_POST['rate']);
 }
 
 //get next video
