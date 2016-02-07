@@ -4,10 +4,7 @@ require('init.php');
 
 header('Content-Type: application/json');
 
-$related = array();
-for($i=0;$i<6;$i++){
-	$related[] = getNextVideo(false);
-}
+$related = getNextVideo(false,6);
 
 $result = array(
 	'result'=>'ok',

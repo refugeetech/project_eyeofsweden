@@ -44,7 +44,7 @@ function updateRating($videoId,$rating){
  * meybe not seen in latest
  * @return     boolean|array false if not video found, array if there is a next video
  */
-function getNextVideo($markedAsWatched=true){
+function getNextVideo($markedAsWatched=true,$howMany=1){
 	//sort
 	asort($_SESSION['rating']);
 	$favorites = array_slice($_SESSION['rating'],-3);//get 3 favorite tags
@@ -56,7 +56,7 @@ function getNextVideo($markedAsWatched=true){
 	if(count($favorites)>0) $query.= 'tag_id IN ('.implode(',',$favorites).') ';//check tags selected by user
 	if(count($favorites)>0 and count($watchedIds)>0) $query.= 'AND ';
 	if(count($watchedIds)>0) $query.= 'video_id NOT IN ('.implode(',',$watchedIds).') ';//check for not seen videos
-	$query.= 'GROUP BY video_id ORDER BY video_rel DESC LIMIT 1';//order by relevance and limit to 1 row
+	$query.= 'GROUP BY video_id ORDER BY video_rel DESC LIMIT '.$howMany;//order by relevance and limit to 1 row
 	//pepare pdo query
 	$stmt = pdodb()->prepare($query);
 	//execute query
@@ -67,14 +67,18 @@ function getNextVideo($markedAsWatched=true){
 	$videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	//check if videos are not empty
 	if(count($videos)>0){
-		//get first video. fuck the rest
-		$v = db()->from('videos',$videos[0]['video_id'])->fetch();
-		//save as watched with 0 score to not show again
-		if($markedAsWatched && !isset($_SESSION['history'][$v['id']])){
-			$_SESSION['history'][$v['id']] = 0;
+		$result = array();
+		foreach($videos as $videoItem){
+			//get first video. fuck the rest
+			$v = db()->from('videos',$videoItem['video_id'])->fetch();
+			//save as watched with 0 score to not show again
+			if($markedAsWatched && !isset($_SESSION['history'][$v['id']])){
+				$_SESSION['history'][$v['id']] = 0;
+			}
+			$result[] = $v;
 		}
 		//return video
-		return $v;
+		return ($howMany===1) ? $v : $result;
 	}else{
 		//no videos found
 		return false;
