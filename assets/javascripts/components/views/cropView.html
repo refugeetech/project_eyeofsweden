@@ -1,0 +1,58 @@
+<div class="image-editor">
+    <input type="file" class="cropit-image-input">
+    <div id="pinch" class="cropit-image-preview"></div>
+    <div class="image-size-label">
+        Resize image
+    </div>
+    <input id="range-slider" type="range" class="cropit-image-zoom-input">
+    <button class="export">Export</button>
+</div>
+
+
+<script>
+    $(function() {
+        var imageEditor = $('.image-editor');
+        var scaleElement;
+
+        imageEditor.cropit({
+            imageState: {
+                src: 'https://scontent.xx.fbcdn.net/hphotos-frc3/v/t1.0-9/943343_10151725255727704_917233875_n.jpg?oh=48aeebed6853713bc235c00613898869&oe=56BBF424',
+                zoom: 0.5,
+                minZoom: 'fit'
+
+            }, onImageLoaded: function () {
+
+                scaleElement = document.getElementById("pinch");
+
+                var mc = new Hammer.Manager(scaleElement);
+
+                var pinch = new Hammer.Pinch();
+
+                mc.add([pinch]);
+
+                mc.on("pinch", function (ev) {
+
+                    var slider = $("#range-slider");
+                    var current = slider.val();
+
+                    var newValue = (current + 0.01) * ev.scale;
+
+                    slider.val(newValue).change();
+                });
+
+                //console.log("After setup")
+            }
+        });
+
+        $('.export').click(function() {
+
+            var scope =  angular.element($(".image-editor")).scope();
+            scope.$apply(function(){
+                var imageData = $('.image-editor').cropit('export');
+                scope.myAngularVariable = imageData;
+
+            });
+        });
+
+    });
+</script>

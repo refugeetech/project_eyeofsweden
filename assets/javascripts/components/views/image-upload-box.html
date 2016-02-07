@@ -1,0 +1,322 @@
+
+<div class="upload-feedback">
+</div>
+
+{{ debugData() | json}}
+<div id="lucia-camera"> <!-- ng-show="uploader" -->
+    <div> <!-- ng-show="uploader.isHTML5" nv-file-drop uploader="uploader"-->
+        <div id="image-upload-size" class="file-drop-area image-upload-size" ng-class="{'file-upload-error':error}"> <!-- nv-file-over uploader="uploader" over-class="file-over"-->
+
+            <div id="lucia-crown-drag-box" class="lucia-crown-wrapper">
+                <div ng-hide="isStep(5) && image.fullUrl" id="lucia-crown" ng-class="{'draggable': !isMobile()}">
+                    <img  id="lucia-crown-img" ng-class="{'blur-me': isStep(2), 'pointer-events-none': isStep(1) || isStep(2) || isStep(4) || isStep(5)}" lucia-image-onload  ng-src="assets/krona-300.png"/>
+                    <div  ng-show="(isStep(3) || isStep(2.5)) && !image.fullUrl" class="scale-icon-wrapper-bottom-right" style="z-index:150; pointer-events: auto;">
+                        <img ng-show="isDesktop()" ng-class="{'blur-me': isStep(2)}" class="scale-icon  pointer-events-none rotate-right" src="assets/skala_desktop.png"/> <!-- Skala krona -->
+                        <img ng-class="{'fade-out': hideTooltipsVar}" ng-show="isDesktop() && isStep(3)" style="padding-left: 20px; position: absolute; width: 150px; bottom: 5px;" class="tooltip-icon pointer-events-none" src="assets/draskala_desktop1.png"/>
+                        <!-- MOBILE scaling -->
+                        <img ng-show="!isDesktop() && isStep(3)" ng-class="{'blur-me': isStep(2)}" class="scale-icon-pinch  pointer-events-none" src="assets/pinchandzoom.png"/> <!-- Skala krona -->
+                        <img ng-class="{'fade-out': hideTooltipsVar}" ng-show="!isDesktop() && isStep(3)" style="padding-left: 40px; position: absolute; width: 140px; bottom: 55px;" class="tooltip-icon pointer-events-none" src="assets/draskala_desktop1.png"/>
+                    </div>
+                </div>
+            </div>
+
+            <div id="upload-content-wrapper" class="upload-content-wrapper">
+                <div ng-show="uploading || isStep(1) || isStep(2)" >
+                    <img ng-class="{'blur-me': isStep(2)}" class="lucia-upload-image" src="assets/placeholderbg.png"/>
+                </div>
+
+                <div ng-show="image.fullUrl" >
+                    <img style="z-index: 250;" class="lucia-upload-image" ng-src="{{image.fullUrl}}"/>
+                </div>
+
+                <div ng-show="!image.fullUrl">
+                    <img style="pointer-events: none; z-index: 100;" ng-class="{'blur-me': isStep(2)}" class="lucia-dress-image" src="assets/dress.png"/>
+                </div>
+
+                <div ng-hide="uploading||error">
+
+                    <stream-input image="image" ng-show="isStep(2.5)" class="lucia-stream-input"; ng-if="hasGetUserMedia()" step="setStep()"></stream-input>
+
+                    <div class="lucia-go-button-wrapper">
+                        <button ng-show="isStep(1)" ng-click="setStep(2)" class="lucia-go-button">{{ 'GET_GOING' | translate }}</button>
+                    </div>
+                    <div ng-show="isStep(2) && hasGetUserMedia()" ng-click="setStep(2.5)" class="lucia-take-picture-button" style="bottom: 50%;">
+                        <img class="lucia-round-icon" src="assets/knapp_rund_kamera.png"/>
+                        <p class="lucia-round-icon-text">{{ 'TAKE_PICTURE' | translate }}</p>
+                    </div>
+
+                    <!--<div ng-show="isStep(2)" class="lucia-take-picture-button" style="bottom: 20%;">
+                        <img class="lucia-round-icon" src="assets/knapp_rund_laddaupp.png"/>
+                        <p class="lucia-round-icon-text">{{ 'UPLOAD_PICTURE' | translate }}</p>
+                    </div>
+                    <div ng-show="isStep(2)" class="file-upload lucia-take-picture-button" style="bottom: 20%;">
+                        <input type="file" class="image-upload lucia-round-icon">
+                    </div>-->
+                </div>
+                <!-- MALL ANSIKTE -->
+                <div ng-class="{'element-fade-in': isStep(1) || isStep(2) || isStep(3), 'element-fade-out': isStep(4) || isStep(5)}" class="lucia-take-picture-button" style="bottom: 22%; z-index: 90; pointer-events: none;">
+                    <img ng-class="{'blur-me': isStep(2)}" class="lucia-mall-image" src="assets/mall.png"/> <!-- Mall ansikte -->
+                </div>
+                <!-- Pinch and zoom -->
+                <div ng-show="isStep(3) && !isDesktop()" class="lucia-take-picture-button" style="bottom: 29%; z-index: 150; pointer-events: none;">
+                    <img ng-class="{'fade-out': hideTooltipsVar}" style="width: 50px;" class="lucia-mall-image" src="assets/pinchandzoom.png"/> <!-- Mall ansikte -->
+                </div>
+
+                <!-- MOBILE -->
+                <div ng-show="isStep(4) && !isDesktop()" class="lucia-checkout-wrapper" style="top: 20px;">
+                    <div style="float: left; padding-left: 30px;">
+                        <img  ng-click="setStep(3)" class="lucia-round-icon-small" src="assets/knapp_rund_kryss.png"/> <!-- Go back -->
+                        <p class="lucia-round-icon-text">{{ 'BACK' | translate }}</p>
+                    </div>
+                    <!--<img style="float: left; padding-left: 25px;" ng-click="rotateImage()" class="lucia-round-icon-small" src="assets/rotera_mobil.png" ng-class="isRotating == true ? 'button-disabled' : ''"/>--> <!-- Rotate -->
+                </div>
+                <div ng-show="isStep(3) && !isDesktop()" class="lucia-checkout-wrapper" style="top: 20px;">
+                    <!--<img style="float: left; padding-left: 25px;" ng-click="rotateImage()" class="lucia-round-icon-small" src="assets/rotera_mobil.png" ng-class="isRotating == true ? 'button-disabled' : ''"/> &lt;!&ndash; Rotate &ndash;&gt;-->
+                </div>
+
+                <!-- DESKTOP -->
+                <div ng-show="isStep(3) && isDesktop()" class="lucia-checkout-wrapper" style="top: 20px;">
+                    <!--<img style="float: right; padding-right: 25px;" ng-click="rotateImage()" class="lucia-round-icon" src="assets/rotera_mobil.png" ng-class="isRotating == true ? 'button-disabled' : ''"/> &lt;!&ndash; Rotate &ndash;&gt;-->
+                </div>
+
+                <div ng-show="isStep(3)" class="lucia-checkout-wrapper" style="top: 20px;">
+                    <div style="float: left; padding-left: 25px;">
+                        <img  ng-click="setStep(2)" class="lucia-round-icon-small" src="assets/knapp_rund_kryss.png"/> <!-- Go back -->
+                        <p class="lucia-round-icon-text">{{ 'RESTART' | translate }}</p>
+                    </div>
+                    <!--<img style="float: left; padding-left: 25px;" ng-click="rotateImage()" class="lucia-round-icon-small" src="assets/rotera_mobil.png" ng-class="isRotating == true ? 'button-disabled' : ''"/>--> <!-- Rotate -->
+                </div>
+
+                <!--<div ng-show="image.fullUrl && isStep(3) && isDesktop()" class="lucia-checkout-wrapper" style="top: 1px; pointer-events: none;">
+                    <img style="float: left; padding-left: 1px;" class="scale-icon rotate-right pointer-events-none" src="assets/skala_desktop.png"/>
+                    <img style="float: left; padding-left: 20px;" class="tooltip-icon pointer-events-none" src="assets/draskala_desktop1.png"/>
+                </div>-->
+                <div class="lucia-checkout-wrapper">
+                    <div style="bottom: 0px; float: right; padding-right: 25px;" ng-class="{'button-fade-in': (isStep(3) && uploading == false), 'button-fade-out': (!isStep(3) || uploading == true)}" ng-click="setStep(4)">
+                        <img class="lucia-round-icon" src="assets/knapp_rund_vidare.png"/>
+                        <p class="lucia-round-icon-text">{{ 'ACCEPT' | translate }}</p>
+                    </div>
+                </div>
+
+                <div class="lucia-checkout-wrapper">
+                    <!-- DESKTOP -->
+                    <div ng-show="isStep(4) && isDesktop()">
+                        <div style="float: left; padding-left: 25px;">
+                            <img ng-click="setStep(3)" class="lucia-round-icon" src="assets/knapp_rund_kryss.png"/> <!-- Go back -->
+                            <p class="lucia-round-icon-text">{{ 'BACK' | translate }}</p>
+                        </div>
+                        <input type="text" ng-model="submittedBy" class="lucia-name-input" Placeholder="{{ 'NAME_INPUT' | translate }}">
+                        <div style="float: right; padding-right: 25px;">
+                            <img ng-click="createSubmission()" class="lucia-round-icon" src="assets/knapp_rund_vidare.png"/> <!-- Save -->
+                            <p class="lucia-round-icon-text">{{ 'FINISHED' | translate }}</p>
+                        </div>
+                    </div>
+
+                    <!-- MOBILE -->
+                    <div ng-show="isStep(4) && !isDesktop()">
+                        <input style="width: 65%; margin-left: 30px; border-radius: 0px;" type="text" ng-model="submittedBy" class="lucia-name-input" Placeholder="{{ 'NAME_INPUT' | translate }}">
+                        <div style="float: right; padding-right: 40px;">
+                            <img ng-click="createSubmission()" class="lucia-round-icon" src="assets/knapp_rund_vidare.png"/> <!-- Save -->
+                            <p class="lucia-round-icon-text">{{ 'FINISHED' | translate }}</p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div ng-show="(uploading || isRotating)&&!error" class="drop-image-text uploading-spinner lucia-take-picture-button" style="bottom: 45%">
+                    <i class="icon-spinner icon-spin icon-large"></i>
+                    <!--<img class="icon-spinner" src="assets/spinner.gif">-->
+                    <!--{{ 'LOADING' | translate }}-->
+                </div>
+
+                <div class="drop-image-info drop-error" ng-show="error">
+                    <span>{{errorMessage}}</span>
+                </div>
+
+                <!--<div id="gesture-area" style="z-index: 90;">
+                    <div style="z-index: 90; width: 100%" id="scale-element" ng-show="shouldShowImage()" ng-class="{'desktop-scaleable': isDesktop() && isRotating == false, 'pointer-events-none': isStep(5)}">
+                        <img style="width: 100%" id="scale-element-img" upload-image-onload ng-src="{{image.fullUrl}}" />
+                        &lt;!&ndash; Scaling icon and tooltip &ndash;&gt;
+                        <div ng-show="image.fullUrl && isStep(3) && isDesktop()" class="scale-icon-wrapper-top-left" style="z-index:150; pointer-events: none; margin-top: -3px; margin-left: 1px;">
+                            <img class="scale-icon  pointer-events-none rotate-right" src="assets/skala_desktop.png"/> &lt;!&ndash; Skala image &ndash;&gt;
+                            <img ng-class="{'fade-out': hideTooltipsVar}" style="padding-left: 20px; position: absolute; width: 150px; top: 0px;" class="tooltip-icon pointer-events-none" src="assets/draskala_desktop1.png"/>
+                        </div>
+                    </div>
+                </div>-->
+                <div ng-show="isStep(3) || isStep(2)"class="image-editor" style="z-index: 170;" ng-class="{'desktop-scaleable': isDesktop() && isRotating == false, 'pointer-events-none': isStep(5)}">
+
+                    <div id="pinch" class="cropit-image-preview">
+                        <!--<img class="img-responsive" src="assets/glow_grey.png"> TODO how do we set the position to reflect the offset in backgroundimage? -->
+                    </div>
+
+                    <div ng-show="isStep(3)" class="lucia-take-picture-button" style="bottom: 30px; z-index: 200; pointer-events: none; padding-left: 15px; padding-right: 15px;">
+                        <img ng-class="{'fade-out': hideTooltipsVar}" ng-hide="isMobile() && isStep(3)" style="padding-left: 0px; width: 120px;" class="tooltip-icon pointer-events-none" src="assets/draskala_desktop2.png"/>
+                    </div>
+
+                    <div ng-show="isStep(3)" class="lucia-take-picture-button" style="bottom: 10px; z-index: 200; pointer-events: none;">
+                        <span class="icon icon-image small-image"></span>
+						<input style="pointer-events: auto;" ng-hide="isMobile()" id="range-slider" type="range" class="cropit-image-zoom-input custom">
+						<span class="icon icon-image large-image">
+						</span>
+                    </div>
+
+
+                    <div ng-show="isStep(2)" class="lucia-take-picture-button" style="bottom: 20%;">
+                        <img style="z-index:200" class="lucia-round-icon" src="assets/knapp_rund_laddaupp.png"/>
+                        <p class="lucia-round-icon-text">{{ 'UPLOAD_PICTURE' | translate }}</p>
+                    </div>
+                    <div ng-show="isStep(2)" class="file-upload lucia-take-picture-button" style="bottom: 20%;">
+                        <input type="file" onChange="handleImage(this)" class="image-upload lucia-round-icon">
+                    </div>
+
+                </div>
+                <div ng-show="isStep(4) || isStep(5)">
+                    <img id="result" src="">
+                </div>
+
+                <script>
+
+                    function handleImage (e){
+                        var imageEditor = $('.image-editor');
+
+                        function attachResults (canvas) {
+                            var data = canvas.toDataURL("image/png");
+
+
+                            imageEditor.cropit('imageSrc', data);
+
+                            //console.log("Result attached");
+                        }
+                        var scope =  angular.element(imageEditor).scope();
+                        scope.$apply(function() {
+                            scope.uploading = true;
+                        });
+
+                        //console.log("start loading");
+
+                        //console.log("File added");
+
+                        var file = e.files[0];
+
+                        loadImage.parseMetaData(file, function (data) {
+                            var options = {maxWidth: 800, maxHeight: 800, canvas: true};
+                            if (data.exif) {
+                                options.orientation = data.exif.get('Orientation');
+                            }
+
+                            //console.log("Parsing metadata");
+
+                            loadImage(
+                                    file,
+                                    attachResults,
+                                    options)
+                        });
+
+
+
+                    };
+
+                    $(function() {
+
+                        var imageEditor = $('.image-editor');
+                        var scaleElement;
+
+                        var currentZoom;
+                        var slider;
+
+                        imageEditor.cropit({
+                                maxZoom: 2,
+                                initialZoom: 'min',
+								width: $('#image-upload-size').width(),
+                                height: $('#image-upload-size').height(),
+                                minZoom: 'fit',
+                                freeMove: true,
+                                    smallImage: 'allow'
+
+                            , onImageLoaded: function () {
+
+
+                                scaleElement = document.getElementById("pinch");
+
+                                var mc = new Hammer.Manager(scaleElement);
+
+                                var pinch = new Hammer.Pinch();
+
+                                mc.add([pinch]);
+
+                                slider = $("#range-slider");
+
+
+
+                                mc.on("pinchmove", function (ev) {
+
+                                    var newValue =  currentZoom * ev.scale;
+
+                                    //console.log(newValue);
+
+                                    slider.val(newValue).change();
+                                });
+
+                                mc.on("pinchend", function (ev) {
+
+                                    //console.log("Pinch end: " + currentZoom);
+
+                                });
+
+                                mc.on("pinchstart", function (ev) {
+
+                                    if (slider.val() == 0)
+                                        currentZoom = 0.01;
+                                    else
+                                        currentZoom = slider.val();
+
+                                    //console.log("Pinch start: " + currentZoom);
+                                });
+
+                                //console.log("After setup");
+
+                                var scope =  angular.element($(".image-editor")).scope();
+
+                                slider.val(0.21).change();
+                                //console.log("setting new zoom");
+                                //console.log(scope.usingVideoMedia);
+                                if(scope.usingVideoMedia == true) {
+                                    //console.log(((630 - $('#image-upload-size').height())/2))
+
+                                    var imageContainer = $("#pinch");
+                                    var backgroundPositions = imageContainer.css("background-size").split(" ");
+                                    var xPos = backgroundPositions[0],
+                                            yPos = backgroundPositions[1];
+
+                                    var dataX = Number(xPos.replace(/[^0-9-.,]/g, ''));
+                                    var dataY = Number(yPos.replace(/[^0-9-.,]/g, ''));
+
+                                    var scaledValue = 0.223 * ( $('#image-upload-size').width() / 630) * ( $('#image-upload-size').width() / 630);
+                                    slider.val(0.21 + scaledValue).change();
+
+                                    console.log("$('#image-upload-size').height()" + $('#image-upload-size').height());
+                                    console.log("dataY" + dataY);
+
+                                    imageEditor.cropit('offset', { x: imageEditor.cropit('offset').x, y: (($('#image-upload-size').height() - dataY)/2)  });
+                                    //console.log("setting new zoom special case");
+                                } else {
+                                    scope.$apply(function(){
+                                        scope.setStep(3);
+                                    });
+                                }
+
+                                //we dont want to apply this directly
+                                scope.uploading = false;
+
+                            }
+                        });
+                    });
+                </script>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,195 @@
+/*
+*= require bootstrap.css
+*= require_tree angular-growl/0.4
+*= require effects.css
+*= require_tree font-awesome
+*= require_self
+*/
+
+/* Challenge 4 */
+
+
+.video-container {
+    position:relative;
+    padding-bottom:56.25%;
+    height:0;
+    overflow:hidden;
+}
+
+.video-container iframe, .video-container object, .video-container embed {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+}
+
+.video-container-main {
+    /*position:relative;*/
+    /*padding-bottom:56.25%;*/
+    overflow:hidden;
+}
+
+.video-container-main iframe, .video-container object, .video-container embed {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:70%;
+}
+
+h1 {
+    color: #32528e;
+    font-size: 40px;
+    font-weight: 400;
+    text-align: center;
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.liker-wrapper {
+    border: 1px solid #32528e;
+    height: 40px;
+    width: 150px;
+    float: right;
+    border-bottom-left-radius: 7px;
+    border-bottom-right-radius: 7px;
+    text-align: center;
+}
+
+.liker-left {
+    border-right: 1px solid #32528e;
+    height: 100%;
+}
+
+.like-icon {
+    font-size: 35px;
+}
+
+.like-icon-2 {
+    color: white;
+    font-size: 35px;
+}
+
+.big-like-icon {
+    color: #de509d;
+    font-size: 60px;
+}
+
+.round-heart-wrapper {
+    cursor: pointer;
+    padding-top: 20px;
+    border-radius: 50px;
+    background-color: #acc9ff;
+    position:absolute;
+    height: 100px;
+    width: 100px;
+    text-align: center;
+    z-index: 10;
+}
+
+.liker-wrapper-2 {
+    position:absolute;
+    height: 50px;
+    width: 150px;
+    text-align: center;
+    z-index: 10;
+}
+
+.liker-left-2 {
+    border-bottom-left-radius: 7px;
+    border-top-left-radius: 7px;
+    border: 1px solid white;
+    height: 100%;
+    cursor: pointer;
+    padding-top: 7px;
+}
+
+.liker-left-2:hover,.liker-right-2:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+.liker-right-2 {
+    padding-top: 3px;
+    border-bottom-right-radius: 7px;
+    border-top-right-radius: 7px;
+    border-top: 1px solid white;
+    border-bottom: 1px solid white;
+    border-right: 1px solid white;
+    height: 100%;
+    cursor: pointer;
+}
+
+.get-down-icon-wrapper {
+    position: absolute;
+    width: 100%;
+    bottom: 15px;
+    margin-left: 15px;
+}
+
+.get-down-icon {
+    height: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    cursor: pointer;
+}
+
+.bounce {
+    -moz-animation: bounce 2s infinite;
+    -webkit-animation: bounce 2s infinite;
+    animation: bounce 2s infinite;
+}
+
+@-moz-keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        -moz-transform: translateY(0);
+        transform: translateY(0);
+    }
+    40% {
+        -moz-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+    60% {
+        -moz-transform: translateY(-15px);
+        transform: translateY(-15px);
+    }
+}
+@-webkit-keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+    40% {
+        -webkit-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+    60% {
+        -webkit-transform: translateY(-15px);
+        transform: translateY(-15px);
+    }
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        -moz-transform: translateY(0);
+        -ms-transform: translateY(0);
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+    40% {
+        -moz-transform: translateY(-30px);
+        -ms-transform: translateY(-30px);
+        -webkit-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+    60% {
+        -moz-transform: translateY(-15px);
+        -ms-transform: translateY(-15px);
+        -webkit-transform: translateY(-15px);
+        transform: translateY(-15px);
+    }
+}
+
+/* Challenge 4 End */
+

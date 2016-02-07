@@ -1,0 +1,26 @@
+<div class="row navbar-shadow">
+    <div class="col-sm-12 header">
+        <div class="row">
+            <div class="col-sm-2 col-sm-offset-1">
+                <a href="http://www.7-eleven.se">
+                    <img class="logo" src="assets/logo.png"/>
+                </a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <div class="col-sm-8">
+                    <ul class="nav navbar-nav main-nav">
+                        <li active-route="/video">
+                            <a ng-click="scrollToVideo()" href>{{ 'WATCH_MOVIE' | translate }}</a>
+                        </li>
+                        <li active-route="/submissions">
+                            <a ng-click="scrollToSubmissions()" href="javascript:angular.noop();">{{ 'SEE_UPLOADS' | translate }}</a>
+                        </li>
+                    </ul>
+                    <ul class="nav settings-nav navbar-right navbar-hashtag">
+                        <li ><p>{{ 'HASHTAG_LUCIA' | translate }}</p></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
