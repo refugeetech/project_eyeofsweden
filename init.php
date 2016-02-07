@@ -41,22 +41,7 @@ function updateRating($videoId,$rating){
 	return false;
 }
 
-/**
- * Get next video information
- * @TODO: returning only not seen videos - what if we run out of videos?
- * meybe not seen in latest
- * @return     boolean|array false if not video found, array if there is a next video
- */
-function getNextVideo($markedAsWatched=true,$howMany=1){
-	//sort
-	asort($_SESSION['rating']);
-	//latest 3
-	$favorites = array();
-	foreach(array_slice($_SESSION['rating'],-3) as $favKey=>$favValue){
-		$favorites[] = str_replace('tag', '', $favKey);
-	}
-	//get next video
-	$watchedIds = array_keys($_SESSION['history']);
+function nextVideosQuery($howMany,$favorites=array(),$watchedIds=array()){
 	//create query
 	$query = 'SELECT video_id, SUM(relevance) AS video_rel FROM video_tags ';//select video_id and counter of founded
 	if(count($favorites)>0 || count($watchedIds)>0) $query.= 'WHERE ';
@@ -71,7 +56,35 @@ function getNextVideo($markedAsWatched=true,$howMany=1){
 	//if db error - return false
 	if(!$queryOk) return false;
 	//fetch videos from result
-	$videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Get next video information
+ * @TODO: returning only not seen videos - what if we run out of videos?
+ * meybe not seen in latest
+ * @return     boolean|array false if not video found, array if there is a next video
+ */
+function getNextVideo($markedAsWatched=true,$howMany=1){
+	//sort
+	asort($_SESSION['rating']);
+	//flip
+	$favorites = array_reverse($_SESSION['rating']);
+	//best 6
+	$favorites = array();
+	foreach(array_slice($favorites,0,6) as $favKey=>$favValue){
+		$favorites[] = str_replace('tag', '', $favKey);
+	}
+	//get next video
+	$watchedIds = array_keys($_SESSION['history']);
+	//get videos
+	$videos = false;
+	$i=5;
+	while(!$videos && $i>0){
+		array_pop($favorites);
+		$videos = nextVideosQuery($howMany,$favorites,$watchedIds);
+		$i--;
+	}
 	//check if videos are not empty
 	if(count($videos)>0){
 		$result = array();
