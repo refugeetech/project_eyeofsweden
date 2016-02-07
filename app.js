@@ -28,8 +28,6 @@
 'use strict'
 var app = angular.module('brightlabs',
     [   ,'7-11-lucia-controllers'
-        ,'7-11-lucia-services'
-        ,'7-11-lucia-directives'
         ,'ngRoute'
         ,'ngAnimate'
         ,'pascalprecht.translate'
@@ -40,8 +38,8 @@ var app = angular.module('brightlabs',
 app.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.
         //when('/', {controller:"initController",template:''}).
-        when('/', {templateUrl: 'assets/components/views/start.html', controller: 'startController', restrict: false}).
-        when('/start', {templateUrl: 'assets/components/views/start.html', controller: 'startController', restrict: false}).
+        when('/', {templateUrl: 'start.html', controller: 'startController', restrict: false}).
+        when('/start', {templateUrl: 'start.html', controller: 'startController', restrict: false}).
         otherwise({redirectTo: '/'});
 }]);
 
