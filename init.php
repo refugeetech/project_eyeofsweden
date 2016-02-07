@@ -68,10 +68,10 @@ function getNextVideo(){
 	//check if videos are not empty
 	if(count($videos)>0){
 		//get first video. fuck the rest
-		$v = $videos[0];
+		$v = db()->from('videos',$videos[0]['video_id'])->fetch();
 		//save as watched with 0 score to not show again
-		if(!isset($_SESSION['history'][$v['video_id']])){
-			$_SESSION['history'][$v['video_id']] = 0;
+		if(!isset($_SESSION['history'][$v['id']])){
+			$_SESSION['history'][$v['id']] = 0;
 		}
 		//return video
 		return $v;

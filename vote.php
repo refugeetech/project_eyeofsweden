@@ -14,6 +14,9 @@ if(isset($_POST['video_id']) && isset($_POST['rate'])){
 
 //get next video
 $result['video'] = getNextVideo();
+if($result['video']){
+	$result['video']['title'] = 'test'.$result['video']['id'];
+}
 
 //show response
 echo json_encode($result);
