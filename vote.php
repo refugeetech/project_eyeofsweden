@@ -8,12 +8,18 @@ $result = array(
 );
 
 //set vote
-if(isset($_POST['video_id']) && isset($_POST['rate'])){
-	$result['updated'] = updateRating($_POST['videoId'],$_POST['rate']);
+$req = isset($_GET['video_id']) ? $_GET : $_POST;
+if(isset($req['video_id']) && isset($req['rate'])){
+	$result['updated'] = updateRating($req['video_id'],$_POST['rate']);
 }
 
 //get next video
-$result['video'] = getNextVideo();
+$result['video'] = getNextVideo(true,1);
+if($result['video']){
+	$result['video']['title'] = 'test'.$result['video']['id'];
+	$videoTagsIds = array_keys(db()->from('video_tags')->where('video_id = ?',$result['video']['id'])->fetchAll('tag_id'));
+	$result['video']['tags'] = db()->from('tags')->where('id',$videoTagsIds)->fetchAll();
+}
 
 //show response
 echo json_encode($result);

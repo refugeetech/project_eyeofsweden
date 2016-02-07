@@ -26,16 +26,37 @@ function updateRating($videoId,$rating){
 	//add to history
 	$_SESSION['history'][$videoId] = $rating;
 	//get video tags
-	$videoTags = db()->from('video_tags')->where('video = ?',$videoId)->fetchAll();
-	foreach($videoTags as $videoTag){
-		if(!isset($_SESSION['rating']['tag'.$videoTag['tag_id']])){
-			//set a new
-			$_SESSION['rating']['tag'.$videoTag['tag_id']] = 0;
+	$videoTags = db()->from('video_tags')->where('video_id = ?',$videoId)->fetchAll();
+	if(is_array($videoTags)){
+		foreach($videoTags as $videoTag){
+			if(!isset($_SESSION['rating']['tag'.$videoTag['tag_id']])){
+				//set a new
+				$_SESSION['rating']['tag'.$videoTag['tag_id']] = 0;
+			}
+			//update
+			$_SESSION['rating']['tag'.$videoTag['tag_id']] += ((int)$rating*$videoTag['relevance']);
 		}
-		//update
-		$_SESSION['rating']['tag'.$videoTag['tag_id']] += ((int)$rating*$videoTag['relevance']);
+		return true;
 	}
-	return true;
+	return false;
+}
+
+function nextVideosQuery($howMany,$favorites=array(),$watchedIds=array()){
+	//create query
+	$query = 'SELECT video_id, SUM(relevance) AS video_rel FROM video_tags ';//select video_id and counter of founded
+	if(count($favorites)>0 || count($watchedIds)>0) $query.= 'WHERE ';
+	if(count($favorites)>0) $query.= 'tag_id IN ('.implode(',',$favorites).') ';//check tags selected by user
+	if(count($favorites)>0 and count($watchedIds)>0) $query.= 'AND ';
+	if(count($watchedIds)>0) $query.= 'video_id NOT IN ('.implode(',',$watchedIds).') ';//check for not seen videos
+	$query.= 'GROUP BY video_id ORDER BY video_rel DESC LIMIT '.$howMany;//order by relevance and limit to 1 row
+	//pepare pdo query
+	$stmt = pdodb()->prepare($query);
+	//execute query
+	$queryOk = $stmt->execute();
+	//if db error - return false
+	if(!$queryOk) return false;
+	//fetch videos from result
+	return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 /**
@@ -44,61 +65,42 @@ function updateRating($videoId,$rating){
  * meybe not seen in latest
  * @return     boolean|array false if not video found, array if there is a next video
  */
-function getNextVideo(){
+function getNextVideo($markedAsWatched=true,$howMany=1){
 	//sort
 	asort($_SESSION['rating']);
-	$favorites = array_slice($_SESSION['rating'],-3);//get 3 favorite tags
+	//flip
+	$favorites = array_reverse($_SESSION['rating']);
+	//best 6
+	$favorites = array();
+	foreach(array_slice($favorites,0,6) as $favKey=>$favValue){
+		$favorites[] = str_replace('tag', '', $favKey);
+	}
 	//get next video
 	$watchedIds = array_keys($_SESSION['history']);
-	//create query
-	$query = 'SELECT video_id, SUM(relevance) AS video_rel FROM video_tags ';//select video_id and counter of founded
-	if(count($favorites)>0 || count($watchedIds)>0) $query.= 'WHERE ';
-	if(count($favorites)>0) $query.= 'tag_id IN ('.implode(',',$favorites).') ';//check tags selected by user
-	if(count($favorites)>0 and count($watchedIds)>0) $query.= 'AND ';
-	if(count($watchedIds)>0) $query.= 'video_id NOT IN ('.implode(',',$watchedIds).') ';//check for not seen videos
-	$query.= 'GROUP BY video_id ORDER BY video_rel DESC LIMIT 1';//order by relevance and limit to 1 row
-	//pepare pdo query
-	$stmt = pdodb()->prepare($query);
-	//execute query
-	$queryOk = $stmt->execute();
-	//if db error - return false
-	if(!$queryOk) return false;
-	//fetch videos from result
-	$videos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	//get videos
+	$videos = false;
+	$i=5;
+	while(!$videos && $i>0){
+		array_pop($favorites);
+		$videos = nextVideosQuery($howMany,$favorites,$watchedIds);
+		$i--;
+	}
 	//check if videos are not empty
 	if(count($videos)>0){
-		//get first video. fuck the rest
-		$v = $videos[0];
-		//save as watched with 0 score to not show again
-		if(!isset($_SESSION['history'][$v['video_id']])){
-			$_SESSION['history'][$v['video_id']] = 0;
+		$result = array();
+		foreach($videos as $videoItem){
+			//get first video. fuck the rest
+			$v = db()->from('videos',$videoItem['video_id'])->fetch();
+			//save as watched with 0 score to not show again
+			if($markedAsWatched && !isset($_SESSION['history'][$v['id']])){
+				$_SESSION['history'][$v['id']] = 0;
+			}
+			$result[] = $v;
 		}
 		//return video
-		return $v;
+		return ($howMany===1) ? $v : $result;
 	}else{
 		//no videos found
 		return false;
 	}
 }
-
-function videoList($pdo){
-	$query = $pdo->query("
-		select v.id, v.link link, group_concat(t.title SEPARATOR ' ') tags
-		from videos v
-		  join video_tags vt on vt.video_id = v.id
-		  join tags t on t.id = vt.tag_id
-		group by v.id");
-
-	if (!$query) {
-		return;
-	}
-
-	return $query->fetchAll();
-}
-
-
-
-
-
-
-
