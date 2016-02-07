@@ -1,8 +1,6 @@
 <?php
 
-require("libs/FluentPDO/FluentPDO.php");
-$pdo = new PDO("mysql:host=176.10.154.200;dbname=eyeofsweden", "root", "reftec1234");
-$fpdo = new FluentPDO($pdo);
+require("../init.php");
 
 ?>
 
@@ -17,7 +15,7 @@ $fpdo = new FluentPDO($pdo);
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
-        <table class="table table-striped">
+        <table class="table table-hover">
             <thead>
             <tr>
                 <th>Id</th>
@@ -26,11 +24,18 @@ $fpdo = new FluentPDO($pdo);
             </tr>
             </thead>
             <tbody>
+            <?php
+            $rows = videoList($pdo);
+            foreach($rows as $row) {
+            ?>
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td><a href=""><?= $row['id'] ?></a></td>
+                <td><a href=""><?= $row['link'] ?></a></td>
+                <td><a href=""><?= $row['tags'] ?></a></td>
             </tr>
+            <?php
+            }
+            ?>
             </tbody>
         </table>
     </div>
