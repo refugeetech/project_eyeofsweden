@@ -5,7 +5,7 @@ $pdo = new PDO("mysql:host=176.10.154.200;dbname=eyeofsweden", "root", "reftec12
 $fpdo = new FluentPDO($pdo);
 
 ?>
-ddfgdfgdfg
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
