@@ -1,0 +1,11 @@
+/**effects**/
+.smooth.ng-enter{
+    -webkit-transition: all 1s;
+    -moz-transition: all 1s ;
+    transition: all 1s ;
+    opacity: 0;
+}
+
+.smooth.ng-enter.ng-enter-active{
+    opacity: 1;
+}
