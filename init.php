@@ -26,16 +26,19 @@ function updateRating($videoId,$rating){
 	//add to history
 	$_SESSION['history'][$videoId] = $rating;
 	//get video tags
-	$videoTags = db()->from('video_tags')->where('video = ?',$videoId)->fetchAll();
-	foreach($videoTags as $videoTag){
-		if(!isset($_SESSION['rating']['tag'.$videoTag['tag_id']])){
-			//set a new
-			$_SESSION['rating']['tag'.$videoTag['tag_id']] = 0;
+	$videoTags = db()->from('video_tags')->where('video_id = ?',$videoId)->fetchAll();
+	if(is_array($videoTags)){
+		foreach($videoTags as $videoTag){
+			if(!isset($_SESSION['rating']['tag'.$videoTag['tag_id']])){
+				//set a new
+				$_SESSION['rating']['tag'.$videoTag['tag_id']] = 0;
+			}
+			//update
+			$_SESSION['rating']['tag'.$videoTag['tag_id']] += ((int)$rating*$videoTag['relevance']);
 		}
-		//update
-		$_SESSION['rating']['tag'.$videoTag['tag_id']] += ((int)$rating*$videoTag['relevance']);
+		return true;
 	}
-	return true;
+	return false;
 }
 
 /**
@@ -47,7 +50,11 @@ function updateRating($videoId,$rating){
 function getNextVideo($markedAsWatched=true,$howMany=1){
 	//sort
 	asort($_SESSION['rating']);
-	$favorites = array_slice($_SESSION['rating'],-3);//get 3 favorite tags
+	//latest 3
+	$favorites = array();
+	foreach(array_slice($_SESSION['rating'],-3) as $favKey=>$favValue){
+		$favorites[] = str_replace('tag', '', $favKey);
+	}
 	//get next video
 	$watchedIds = array_keys($_SESSION['history']);
 	//create query

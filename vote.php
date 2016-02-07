@@ -14,7 +14,7 @@ if(isset($req['video_id']) && isset($req['rate'])){
 }
 
 //get next video
-$result['video'] = getNextVideo();
+$result['video'] = getNextVideo(true,1);
 if($result['video']){
 	$result['video']['title'] = 'test'.$result['video']['id'];
 	$videoTagsIds = array_keys(db()->from('video_tags')->where('video_id = ?',$result['video']['id'])->fetchAll('tag_id'));
