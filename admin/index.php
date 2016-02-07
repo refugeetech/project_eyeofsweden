@@ -4,7 +4,7 @@ require("../init.php");
 
 function videoList($pdo){
     $query = $pdo->query("
-		select v.id, v.link link, group_concat(t.title SEPARATOR ' ') tags
+		select v.id, v.link link, group_concat(t.title SEPARATOR ', ') tags
 		from videos v
 		  join video_tags vt on vt.video_id = v.id
 		  join tags t on t.id = vt.tag_id
@@ -36,6 +36,7 @@ function videoList($pdo){
                 <th>Id</th>
                 <th>Link</th>
                 <th>Tags</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -44,10 +45,10 @@ function videoList($pdo){
             foreach($rows as $row) {
             ?>
             <tr>
-                <td><?= $row['id'] ?></a></td>
-                <td><?= $row['link'] ?></a></td>
+                <td><?= $row['id'] ?></td>
+                <td><a href="<?= $row['link'] ?>" target="_blank"><?= $row['link'] ?></a></td>
                 <td><?= $row['tags'] ?></a></td>
-                <td><a href="admin/edit.php?videoId=<?= $row['id'] ?>" class="btn btn-primary btn-sm active">Edit</a> <a href="admin/delete.php?videoId=<?= $row['id'] ?>" class="btn btn-danger btn-sm active">Delete</a></td>
+                <td><a href="edit.php?videoId=<?= $row['id'] ?>" class="btn btn-primary btn-sm active">Edit</a> <a href="admin/delete.php?videoId=<?= $row['id'] ?>" class="btn btn-danger btn-sm active">Delete</a></td>
             </tr>
             <?php
             }

@@ -1,45 +1,45 @@
 <?php
 
-require("../init.php");
+    require("../init.php");
 
-function getVideo($pdo){
-    $videoId = $_GET['videoID'];
-    if (!$videoId) {
-        return;
+    function getVideo($pdo){
+        $videoId = $_GET['videoId'];
+        if (!$videoId) {
+            return;
+        }
+
+        $query = $pdo->query("
+            select v.id, v.link, t.id, t.title from videos v
+            JOIN video_tags vt on vt.video_id = v.id
+            JOIN tags t on t.id = vt.tag_id
+            where v.id = "+ $videoId);
+
+        if (!$query) {
+            return;
+        }
+
+        return $query->fetchAll();
     }
 
-    $query = $pdo->query("
-		select v.id, v.link, t.id, t.title from videos v
-        JOIN video_tags vt on vt.video_id = v.id
-        JOIN tags t on t.id = vt.tag_id
-        where v.id = "+ $videoId);
 
-    if (!$query) {
-        return;
+    function getTags($pdo){
+        $videoId = $_GET['videoId'];
+        if (!$videoId) {
+            return;
+        }
+
+        $query = $pdo->query("
+            select v.id videoId, t.id tagId, t.title from videos v
+            JOIN video_tags vt on vt.video_id = v.id
+            JOIN tags t on t.id = vt.tag_id
+            where v.id = "+ $videoId);
+
+        if (!$query) {
+            return;
+        }
+
+        return $query->fetchAll();
     }
-
-    return $query->fetchAll();
-}
-
-
-function getTags($pdo){
-    $videoId = $_GET['videoID'];
-    if (!$videoId) {
-        return;
-    }
-
-    $query = $pdo->query("
-		select v.id videoId, t.id tagId, t.title from videos v
-        JOIN video_tags vt on vt.video_id = v.id
-        JOIN tags t on t.id = vt.tag_id
-        where v.id = "+ $videoId);
-
-    if (!$query) {
-        return;
-    }
-
-    return $query->fetchAll();
-}
 
 ?>
 
@@ -56,6 +56,7 @@ function getTags($pdo){
     <div class="col-md-10">
         <?php
         $rows = getTags($pdo);
+
         foreach($rows as $row) {
         ?>
         <form class="form-inline">

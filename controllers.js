@@ -13,20 +13,15 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
     $scope.trustSrc = function(src) {
         if (src == undefined) return;
         return $sce.trustAsResourceUrl(src + "?modestbranding=1&autohide=1&showinfo=0&controls=0");
-    }
+    };
 
     $scope.getRandomVideo = function () {
         $scope.currentVideo = $scope.videos[Math.floor((Math.random() * $scope.videos.length))];
         console.log("playing video " + $scope.currentVideo.url)
 
-    }
-    $scope.loading = false;
-
+    };
+    
     $scope.loadVideos = function () {
-        //if(!$scope.loading)
-        //    $scope.loading = true;
-        //else
-        //    return
         console.log("loadVideos");
         $http.get('vote.php').success(function(data) {
             if (!data.video) return;
@@ -36,71 +31,54 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
                 title: data.video.title,
                 tags: data.video.tags
             };
-
         });
 
+        $http.get('related.php').success(function(data) {
+            var related = data.related;
+            if (!related) return;
 
-        //$http.get('related.php').success(function(data) {
-        //    $scope.videos = {
-        //        id: data.video.id,
-        //        url: data.video.link,
-        //        title: data.video.title,
-        //        tags: data.video.tags
-        //    };
-        //    $scope.getRandomVideo();
-        //    $scope.nextVideos = $scope.videos;
-        //});
-
-        //$scope.videos = $scope.videos.concat(
-        //    [
-        //        { id: 1, url: "https://www.youtube.com/embed/cCKvtxg1ZTs", title: "Teacher",tags: ["education", "teacher", "school"]},
-        //        { id: 2, url: "https://www.youtube.com/embed/cCKvtxg1ZTs", title: "Hermods high school in Sweden",tags: ["swedish","school","education","language"]},
-        //        { id: 3, url: "https://www.youtube.com/embed/nPJm6Hbtwrg", title: "How to become a doctor (PhD) in Sweden. Step-by-step.",tags: ["phd","university","doctoral","education","doctor"]},
-        //        { id: 4, url: "https://www.youtube.com/embed/mhxcpaJE_j4", title: "My Swedish School",tags: ["education","school","everyday"]},
-        //        { id: 5, url: "https://www.youtube.com/embed/FofjbSdsgq4", title: "Teachers TV- How Do They Do It In Sweden?",tags: ["education","teacher","school","teaching"]},
-        //        { id: 6, url: "https://www.youtube.com/embed/ImytBfwJbkA", title: "How to be a student in Sweden",tags: ["education","studen","school","university","everyday"]}
-        //    ]
-        //);
-        //$scope.getRandomVideo();
-        //$scope.nextVideos = $scope.videos;
-
-
-
-    }
+            for (var i=0; i<related.length; i++) {
+                var video = related[i];
+                $scope.nextVideos.push({
+                    id: video.id,
+                    url: video.link,
+                    title: video.title
+                });
+            }
+        });
+    };
 
     $scope.loadVideos();
 
     $scope.like = function () {
-        for(var i = 0; i < $scope.currentVideo.tags.length; i++) {
-            if(!$scope.tagValues[$scope.currentVideo.tags[i]])
-                $scope.tagValues[$scope.currentVideo.tags[i]]=0;
-            $scope.tagValues[$scope.currentVideo.tags[i]]++;
-        }
-
-        $scope.getRandomVideo();
-    }
-
-    $scope.dislike = function () {
-        for(var i = 0; i < $scope.currentVideo.tags.length; i++) {
-            if(!$scope.tagValues[$scope.currentVideo.tags[i]]) {
-                $scope.tagValues[$scope.currentVideo.tags[i]] = 0;
-            }
-
-            $scope.tagValues[$scope.currentVideo.tags[i]]--;
-        }
-
-        $scope.getRandomVideo();
-    }
+        console.log("like");
+        var vid = $scope.currentVideo.id;
+        $scope.getVideo(vid, 1);
+    };
 
     $scope.nextVideo = function () {
         console.log("next!");
-        $scope.getRandomVideo();
-    }
+        var vid = $scope.currentVideo.id;
+        $scope.getVideo(vid, 0);
+    };
+
+    $scope.getVideo = function(vid, rating) {
+        console.log("vid", vid, "rating", rating);
+        $http.get('vote.php?video_id=' + vid + '&rate=' + rating).success(function(data) {
+            if (!data.video) return;
+            $scope.currentVideo = {
+                id: data.video.id,
+                url: data.video.link,
+                title: data.video.title,
+                tags: data.video.tags
+            };
+        });
+    };
 
     $scope.previousVideo = function () {
         console.log("previous!");
-        $scope.getRandomVideo();
-    }
+        $scope.nextVideo();
+    };
 
     $scope.clickVideo = function (video) {
         console.log("clicking a video");
@@ -109,13 +87,13 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
         var element = document.getElementById('video-top');
 
         smoothScroll(element);
-    }
+    };
 
     $scope.scrollDown = function () {
         var element = document.getElementById('mightLike');
 
         smoothScroll(element);
-    }
+    };
 
     $scope.isDesktop = function () {
         return $scope.displayMode == "desktop";
@@ -148,7 +126,7 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
                     'height': ($scope.windowHeight*0.7) + 'px'
                 };
             }
-        }
+        };
 
         $scope.infoBox = function () {
             if($scope.isDesktop()) {
@@ -161,7 +139,7 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
                     'height': ($scope.windowHeight*0.3) + 'px'
                 };
             }
-        }
+        };
 
         $scope.mainVideo = function () {
             if($scope.isDesktop()) {
@@ -174,7 +152,7 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
                     'margin-left': ($scope.windowWidth*0.15) + 'px',
                 };
             }
-        }
+        };
 
         $scope.swipeButton = function () {
             if($scope.isDesktop()) {
@@ -187,7 +165,7 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
                     'margin-top': (($scope.windowHeight*0.70)/2)-15 + 'px',
                 };
             }
-        }
+        };
 
         $scope.likeMiddle = function () {
             if($scope.isDesktop()) {
@@ -203,7 +181,7 @@ controllers.controller('startController',['$scope', '$sce', '$window', 'smoothSc
                 };
             }
         }
-    }
+    };
     $scope.loadDimensions();
 
     angular.element($window).bind('resize', function(){
