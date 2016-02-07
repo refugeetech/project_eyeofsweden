@@ -44,7 +44,7 @@ function updateRating($videoId,$rating){
  * meybe not seen in latest
  * @return     boolean|array false if not video found, array if there is a next video
  */
-function getNextVideo(){
+function getNextVideo($markedAsWatched=true){
 	//sort
 	asort($_SESSION['rating']);
 	$favorites = array_slice($_SESSION['rating'],-3);//get 3 favorite tags
@@ -70,7 +70,7 @@ function getNextVideo(){
 		//get first video. fuck the rest
 		$v = db()->from('videos',$videos[0]['video_id'])->fetch();
 		//save as watched with 0 score to not show again
-		if(!isset($_SESSION['history'][$v['id']])){
+		if($markedAsWatched && !isset($_SESSION['history'][$v['id']])){
 			$_SESSION['history'][$v['id']] = 0;
 		}
 		//return video
